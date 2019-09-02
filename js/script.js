@@ -110,28 +110,47 @@ window.addEventListener('DOMContentLoaded', function() {
             document.body.style.overflow = '';
         });
 
-        let inputRub = document.getElementById('rub'),
-            inputUsd = document.getElementById('usd');
+        //FORM
 
-            // inputRub.addEventListener('input', () => {
-            //     let request = new XMLHttpRequest();
-                
-            //     request.open('GET', 'js/currnt.json');
-            //     request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-            //     request.send();
+        let message = {
+            loading: 'Загрузка',
+            success: 'Спасибо! Мы скоро с вами свяжемся!',
+            failure: 'Что-то пошло не так'
+        };
 
-            //     request.addEventListener('readystatechange', function() {
-            //         if (request.readyState === 4 && request.status == 200) {
-            //             let data = JSON.parse(request.response);
+        let form = document.querySelector('.main-form'),
+            input = form.getElementsByTagName('input'),
+            statusMessage = document.createElement('div');
 
-            //             inputUsd.value = inputRub.value / data.usd;
+        statusMessage.classList.add('status');
 
- 
-            //        } else {
-            //            inputUsd.value = 'Что-то пошло не так';
-            //        } 
-            //     })
-            // })
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            form.appendChild(statusMessage);
+            //request
+            let request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+            request.setRequestHeader('Content-Type', 'application/x-www-form-urlencodes');
+            
+            let formData = new FormData(form);
+            request.send(formData);
+            request.addEventListener('readystatechange', function() {
+                if (request.readyState < 4) {
+                    statusMessage.innerHTML = message.loading;
+                } else if (request.readyState === 4 && request.status ==200) {
+                    statusMessage.innerHTML = message.success;
+                } else {
+                    statusMessage.innerHTML = message.failure;
+                }
+            });
+            for(let i = 0; i < input.length; i++) {
+                input[i].value = '';
+            }
+        });
+
+        
+
+
 
      
         
